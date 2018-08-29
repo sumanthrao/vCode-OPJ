@@ -1,6 +1,9 @@
 import subprocess
 import sys
 import os
+import subprocess
+import threading
+
 
 
 class RunCCode(object):
@@ -10,6 +13,8 @@ class RunCCode(object):
         self.compiler = "gcc"
         if not os.path.exists('running'):
             os.mkdir('running')
+
+
     
     def _compile_c_code(self, filename, prog="./running/a.out"):
         cmd = [self.compiler, filename, "-Wall", "-o", prog]
@@ -21,10 +26,19 @@ class RunCCode(object):
 
     def _run_c_prog(self, cmd="./running/a.out"):
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        result = p.wait()
-        a, b = p.communicate()
-        self.stdout, self.stderr = a.decode("utf-8"), b.decode("utf-8")
-        return result
+        
+        try:
+            a, b = p.communicate(timeout = 2)
+            self.stdout, self.stderr = a.decode("utf-8"), b.decode("utf-8")
+        except subprocess.TimeoutExpired:
+            print('TLE')
+            p.kill()
+            self.stdout = "TLE"
+            self.stderr = " "
+
+        #timer.cancel()
+        
+        
     
     def run_c_code(self, code=None):
         filename = "./running/test.c"
@@ -34,6 +48,7 @@ class RunCCode(object):
         with open(filename, "w") as f:
             f.write(code)
         res = self._compile_c_code(filename)
+        print("COMPILED")
         result_compilation = self.stdout + self.stderr
         if res == 0:
             self._run_c_prog()
