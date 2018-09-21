@@ -26,27 +26,37 @@ class RunCCode(object):
 
     def _run_c_prog(self, cmd="./running/a.out"):
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        
-        try:
-            a, b = p.communicate(timeout = 2)
-            self.stdout, self.stderr = a.decode("utf-8"), b.decode("utf-8")
-        except subprocess.TimeoutExpired:
-            print('TLE')
-            p.kill()
-            self.stdout = "TLE"
-            self.stderr = " "
+        a, b = p.communicate()
+        self.stdout, self.stderr = a.decode("utf-8"), b.decode("utf-8")
 
-        #timer.cancel()
-        
-        
-    
+    #include the limits file in the users code    
+    def line_prepender(self,filename, line):
+        with open(filename, 'r+') as f:
+            content = f.read()
+            f.seek(0, 0)
+            f.write(line + content)
+
+    def line_pre_adder(self,filename, line_to_prepend):
+        f = fileinput.input(filename, inplace=1)
+        for xline in f:
+            if f.isfirstline():
+                print(line_to_prepend.rstrip('\r\n') + '\n' + xline)
+            else:
+                print(xline)
+
     def run_c_code(self, code=None):
         filename = "./running/test.c"
+
         if not code:
             code = self.code
         result_run = "No run done"
+        line_to_add = '#include "../setlimits.c"\n'
+        code = line_to_add + code
+        print(code)
         with open(filename, "w") as f:
             f.write(code)
+        
+        #self.line_prepender(filename,line_to_add)
         res = self._compile_c_code(filename)
         print("COMPILED")
         result_compilation = self.stdout + self.stderr
