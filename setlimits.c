@@ -10,21 +10,20 @@
 void
 signal_callback_handler(int signum)
 {
-   printf("TLE: Time limit exceeded error\n");
+   printf("TLE: TIME LIMIT EXCEEDED \n");
    exit(signum);
 }
 
 
  int setlimits(int argc, char* argv[]) 
  { 
-   
    struct rlimit rl; 
    bool defaultv = false;
    if(argc<2){
       defaultv = true;
    }
    //default time out
-   int time_to_set = 5 ;
+   int time_to_set = 5;
    if(!defaultv){
       time_to_set = atoi(argv[1]);
    }
@@ -37,15 +36,12 @@ signal_callback_handler(int signum)
    // changed value. 
    setrlimit (RLIMIT_CPU, &rl); 
 
-   // First get the limit on open files 
-   getrlimit (RLIMIT_NOFILE, &rl); 
    // Change the limit 
    rl.rlim_cur = 3; // 3 are for stdin, stdout, stderr and one extra 
   
    // Now call setrlimit() to set the  
    // changed value. 
-   setrlimit (RLIMIT_NOFILE, &rl);
-      
+   setrlimit (RLIMIT_NOFILE, &rl);   
   // First get the limit on number of child processes
   getrlimit (RLIMIT_NPROC, &rl);
 
