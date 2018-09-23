@@ -25,9 +25,17 @@ class RunCCode(object):
         return result
 
     def _run_c_prog(self, cmd="./running/a.out"):
-        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        memory_limit = 1024 #default value, TODO: fetch from the DB
+        virtualenvcmd = "./time_sandbox/timeout -m "+str(memory_limit)
+        p = subprocess.Popen(virtualenvcmd+" "+cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,shell = True)
         a, b = p.communicate()
         self.stdout, self.stderr = a.decode("utf-8"), b.decode("utf-8")
+        #checking if memory exceeded
+        arr = self.stderr.split()
+        if(arr[0]=="MEM"):
+            #if the memory limit exceeded
+            ERROR = "MEMORY LIMIT EXCEEDED \n"
+            self.stdout = self.stdout + ERROR
 
     #include the limits file in the users code    
     def line_prepender(self,filename, line):

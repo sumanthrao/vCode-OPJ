@@ -1,9 +1,12 @@
 #include "../setlimits.c"
 #include<stdio.h>
 #include<stdlib.h>
+
 int main(int argc, char* argv[]){
 	setlimits(argc,argv);
-	int* arr = malloc(sizeof(int)*10000);
+  // to test memory -  defult limit is 1024 bytes
+	int* arr = malloc(sizeof(int)*1000);
+  //timeouot limit - 5 seconds
 	for(int i=0;i<1000000;i++){
 		for(int j=0;j<100000;j++){
 			;
