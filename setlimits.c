@@ -24,7 +24,7 @@ signal_callback_handler(int signum)
       defaultv = true;
    }
    //default time out
-   int time_to_set = 5;
+   int time_to_set = 5 ;
    if(!defaultv){
       time_to_set = atoi(argv[1]);
    }
