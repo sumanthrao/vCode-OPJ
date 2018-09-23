@@ -36,6 +36,9 @@ class RunCCode(object):
             #if the memory limit exceeded
             ERROR = "MEMORY LIMIT EXCEEDED \n"
             self.stdout = self.stdout + ERROR
+        elif(arr[0]=="FINISHED"):
+            MSG = "Running successful\n"
+            self.stdout = self.stdout + MSG
 
     #include the limits file in the users code    
     def line_prepender(self,filename, line):
