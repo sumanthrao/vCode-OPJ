@@ -26,7 +26,7 @@ class RunCCode(object):
 
     def _run_c_prog(self, cmd="./running/a.out"):
         memory_limit = 1024 #default value, TODO: fetch from the DB
-        virtualenvcmd = "./time_sandbox/timeout -m "+str(memory_limit)
+        virtualenvcmd = "./timeout -m "+str(memory_limit)
         p = subprocess.Popen(virtualenvcmd+" "+cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,shell = True)
         a, b = p.communicate()
         self.stdout, self.stderr = a.decode("utf-8"), b.decode("utf-8")
