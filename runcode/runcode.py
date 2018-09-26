@@ -25,11 +25,13 @@ class RunCCode(object):
         return result
 
     def _run_c_prog(self, cmd="./running/a.out"):
+        #taking custom input
+        my_input = open("/home/sumanth/projects/flask_compiler/codelauncher/runcode/input.txt","r")
         memory_limit = 5024 #default value, TODO: fetch from the DB
         time_limit = 2 #default TODO fetch from the DB
         virtualenvcmd = "./timeout -m "+str(memory_limit)
         cmd = cmd+" "+str(time_limit)
-        p = subprocess.Popen(virtualenvcmd+" "+cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,shell = True)
+        p = subprocess.Popen(virtualenvcmd+" "+cmd,stdin=my_input,stdout=subprocess.PIPE, stderr=subprocess.PIPE,shell = True)
         a, b = p.communicate()
         self.stdout, self.stderr = a.decode("utf-8"), b.decode("utf-8")
         #checking if memory exceeded

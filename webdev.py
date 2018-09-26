@@ -37,6 +37,10 @@ default_cols = "60"
 def runc():
     if request.method == 'POST':
         code = request.form['code']
+        resinput = format(request.form['resinput'])
+        f = open("/home/sumanth/projects/flask_compiler/codelauncher/runcode/input.txt","w")
+        f.write(resinput)
+        f.close()  
         run = runcode.RunCCode(code)
         rescompil, resrun = run.run_c_code()
         if not resrun:
