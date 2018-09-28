@@ -1,6 +1,9 @@
 from flask import Flask, render_template, request
 from runcode import runcode
+import socket
 app = Flask(__name__)
+import code
+import random
 
 default_c_code = """#include <stdio.h>
 
@@ -31,17 +34,22 @@ if __name__ == "__main__":
 
 default_rows = "15"
 default_cols = "60"
-
+Index = 0
 @app.route("/")
 @app.route("/runc", methods=['POST', 'GET'])
 def runc():
+    
     if request.method == 'POST':
         code = request.form['code']
         resinput = format(request.form['resinput'])
-        f = open("/home/sumanth/projects/flask_compiler/codelauncher/runcode/input.txt","w")
+        global Index
+        Index += 1
+        ID = Index
+        instr = "./running/input"+str(ID)+".txt"
+        f = open(instr,"w")
         f.write(resinput)
         f.close()  
-        run = runcode.RunCCode(code)
+        run = runcode.RunCCode(code,Index)
         rescompil, resrun = run.run_c_code()
         if not resrun:
             resrun = 'No result!'
@@ -98,4 +106,4 @@ def runpy():
                            rows=default_rows, cols=default_cols)
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host='0.0.0.0')

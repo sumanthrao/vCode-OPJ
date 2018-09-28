@@ -3,19 +3,17 @@ import sys
 import os
 import subprocess
 import threading
-
-
+import socket
+import re
 
 class RunCCode(object):
-    
-    def __init__(self, code=None):
+    def __init__(self, code=None,index=0):
         self.code = code
+        self.index =  index
         self.compiler = "gcc"
         if not os.path.exists('running'):
             os.mkdir('running')
 
-
-    
     def _compile_c_code(self, filename, prog="./running/a.out"):
         cmd = [self.compiler, filename, "-Wall", "-o", prog]
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -24,9 +22,10 @@ class RunCCode(object):
         self.stdout, self.stderr = a.decode("utf-8"), b.decode("utf-8")
         return result
 
-    def _run_c_prog(self, cmd="./running/a.out"):
+    def _run_c_prog(self, cmd="./running/a.out",idx=0):
         #taking custom input
-        my_input = open("/home/sumanth/projects/flask_compiler/codelauncher/runcode/input.txt","r")
+        my_input = open("./running/input"+str(idx)+".txt","r")
+
         memory_limit = 5024 #default value, TODO: fetch from the DB
         time_limit = 2 #default TODO fetch from the DB
         virtualenvcmd = "./timeout -m "+str(memory_limit)
@@ -44,6 +43,41 @@ class RunCCode(object):
             MSG = "Running successful\n"
             self.stdout = self.stdout + MSG
 
+    
+
+    def run_c_code(self, code=None):
+        def cleanup_files(index):
+            prog_output = "./running/a"+str(self.index)+".out"
+            filename = "./running/test"+str(self.index)+".c"
+            inputfile = "./running/input"+str(self.index)+".txt"
+            os.remove(prog_output)
+            os.remove(filename)
+            os.remove(inputfile)
+        idx = self.index
+        prog_output = "./running/a"+str(idx)+".out"
+        filename = "./running/test"+str(idx)+".c"
+        if not code:
+            code = self.code
+        result_run = "No run done"
+        line_to_add = '#include "../setlimits.c"\n'
+        code = line_to_add + code
+        code =re.sub(r'main[\s \t \n a-z A-Z ( ) , \* ;\[\]]*{', "main(int argc,char* argv[]){ setlimits(argc,argv);", code)
+        
+        print(code)
+        with open(filename, "w") as f:
+            f.write(code)
+        
+        #self.line_prepender(filename,line_to_add)
+        res = self._compile_c_code(filename,prog_output)
+        print("COMPILED")
+        result_compilation = self.stdout + self.stderr
+        if res == 0:
+            self._run_c_prog(prog_output,idx)
+            result_run = self.stdout + self.stderr
+        cleanup_files(idx)
+        return result_compilation, result_run
+
+
     #include the limits file in the users code    
     def line_prepender(self,filename, line):
         with open(filename, 'r+') as f:
@@ -59,26 +93,12 @@ class RunCCode(object):
             else:
                 print(xline)
 
-    def run_c_code(self, code=None):
-        filename = "./running/test.c"
+    def add_limits(code):
+        code = re.sub(r'main[\s \t \n a-z A-Z ( ) , \* ;\[\]]*', "main(int argc,char* argv[]){ setlimits(argc,argv);", code)
+        return code
 
-        if not code:
-            code = self.code
-        result_run = "No run done"
-        line_to_add = '#include "../setlimits.c"\n'
-        code = line_to_add + code
-        print(code)
-        with open(filename, "w") as f:
-            f.write(code)
-        
-        #self.line_prepender(filename,line_to_add)
-        res = self._compile_c_code(filename)
-        print("COMPILED")
-        result_compilation = self.stdout + self.stderr
-        if res == 0:
-            self._run_c_prog()
-            result_run = self.stdout + self.stderr
-        return result_compilation, result_run
+
+
 
 
 class RunCppCode(object):
