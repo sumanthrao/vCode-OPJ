@@ -67,15 +67,17 @@ li {
 .submission{
     position:fixed;
     right:10px;
-    top:70px;
-	left:1050px;
-	min-height: 100px;
-    min-width: 100px;
-    font-weight: bold;
-    height: 40%;
-    bottom: 0px;
+    width:10%;
+    top:55px;
+	left:620px;
+	font-weight: bold;
+    
 
 }
+.thick {
+    font-weight: bold;
+}
+
 
 #launch-button {
     position: absolute;
