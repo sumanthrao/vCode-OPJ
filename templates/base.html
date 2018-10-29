@@ -20,26 +20,27 @@
             <div id="title-code" class="head-section">
               Source Code
             </div>
-	 {% block code %}
+	        {% block code %}
             {% endblock %}
 	<div id="input">
 
    			<div id="title-input" class="head-section">
                         Input
       			 </div>
-	{% block input %}
-        {% endblock %}
+	        {% block input %}
+              {% endblock %}
 			
 
 		</div>
 
-            <input id="launch-button" class="head-section" type="submit" value="Launch" />
+            <input id="launch-button" class="head-section" type="submit" value="Submit" />
            
-
+            
 	
 	
 
         </form>
+       
     </div>
     
     <!-- ************ RUNNING ZONE RESULTS ************ -->
@@ -64,7 +65,15 @@
         {% block comp %}
         {% endblock %}
     </div>
+    
 </div>
+<form action="/submission" method="post">
+    <div  class ="submission" >
+    <input id="submit-button" type="submit" class="thick" value="View Submissions"/>
+    </div>
+</form>
+</body>
+
 <script src="{{ url_for('static', filename='ace/ace.js') }}"></script>
 <script>
     // The Ace editor needs divs instead of textareas
@@ -87,5 +96,5 @@
 	
     });
 </script>
-</body>
+
 </html>
