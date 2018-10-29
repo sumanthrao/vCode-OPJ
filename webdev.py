@@ -35,10 +35,15 @@ if __name__ == "__main__":
 default_rows = "15"
 default_cols = "60"
 Index = 0
+@app.route("/submission", methods = ['POST'])
+def submission():
+    return render_template("submit.html", output = "heyyy")
+
 @app.route("/")
 @app.route("/runc", methods=['POST', 'GET'])
 def runc():
-    
+
+   
     if request.method == 'POST':
         code = request.form['code']
         resinput = format(request.form['resinput'])
@@ -50,17 +55,19 @@ def runc():
         f.write(resinput)
         f.close()  
         run = runcode.RunCCode(code,Index)
-        rescompil, resrun = run.run_c_code()
+        rescompil, resrun, test_case_output = run.run_c_code()
         if not resrun:
             resrun = 'No result!'
     else:
         code = default_c_code
         resrun = 'No result!'
         rescompil = ''
+        test_case_output=""
     return render_template("main.html",
                            code=code,
                            target="runc",
                            resrun=resrun,
+                           test_case_output=test_case_output,
                            rescomp=rescompil,
                            rows=default_rows, cols=default_cols)
 
@@ -106,4 +113,4 @@ def runpy():
                            rows=default_rows, cols=default_cols)
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0')
+    app.run(host='0.0.0.0',port="5001")

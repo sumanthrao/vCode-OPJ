@@ -66,7 +66,12 @@ class RunCCode(object):
         '''
         my_input =  self.fetch_data()
         score = 0
+        correct_cases = 0
         test_case_output = {}
+        submission_correctness = True
+        total_cases = len(my_input)
+        total_time = 0
+        total_memory = 0
         for i in range(len(my_input)):
             a , b = self.execute_testcase(my_input[i]["input"],memory_limit, time_limit,cmd)     
             self.stdout, self.stderr = a.decode("utf-8"), b.decode("utf-8")
@@ -74,7 +79,9 @@ class RunCCode(object):
             print(self.stdout)
             if(target_output==self.stdout):
                 score += my_input[i]["points"]
-                print(score)
+                correct_cases += 1
+            else:
+                submission_correctness = False    
             #checking if memory exceeded
             arr = self.stderr.split()
             tle_check=self.stdout.split(":")
@@ -84,14 +91,38 @@ class RunCCode(object):
             if(tle_check[0]=="TLE"):
                 time = "Not Ok"
                 STATUS = "TLE"+" "+str(time_limit)
+                submission_correctness = False
             elif(arr[0]=="MEM"):
                 #if the memory limit exceeded
                 STATUS = "MEMORY LIMIT EXCEEDED \n"
                 memory = "Not Ok"
+                submission_correctness = False
             elif(arr[0]=="FINISHED"):
                 STATUS = "Running successful\n"
             self.update_test_status(i ,score,time,memory,STATUS,test_case_output)
-        print(test_case_output)
+        
+            '''
+                format the output in order to display the status
+            '''
+            i=0
+            time_taken = 0
+            memory_taken = 0
+            while(i < len(arr)):
+                if(arr[i]=="CPU"):
+                    time_taken = float(arr[i+1])
+                elif(arr[i]=="MEM"):
+                    memory_taken = float(arr[i+1])
+                i += 1
+            total_time += time_taken
+            total_memory += memory_taken   
+
+        if(submission_correctness):
+            result = "Correct Answer"
+        else:
+            result = "Wrong Answer"
+        
+        output ="Submission status: "+str(result)+"\n"+str(correct_cases)+"/"+str(total_cases)+" Test Cases Passed\nScore "+str(score)+"\nTime taken ="+str(total_time)+"s"+"\nMemory taken = "+str(total_memory)+"bytes\n"
+        return output
     
 
     def run_c_code(self, code=None):
@@ -126,10 +157,10 @@ class RunCCode(object):
         print("COMPILED")
         result_compilation = self.stdout + self.stderr
         if res == 0:
-            self._run_c_prog(prog_output,idx)
+            test_case_output = self._run_c_prog(prog_output,idx)
             result_run = self.stdout + self.stderr
         cleanup_files(idx)
-        return result_compilation, result_run
+        return result_compilation, result_run, test_case_output
 
 
     #include the limits file in the users code    
