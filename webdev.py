@@ -2,9 +2,10 @@ from flask import Flask, render_template, request
 from runcode import runcode
 import socket
 app = Flask(__name__)
+app._static_folder = "/home/t/vCode-OPJ/static/"
 import code
 import random
-
+temp=""
 default_c_code = """#include <stdio.h>
 
 int main(int argc, char **argv)
@@ -35,9 +36,8 @@ if __name__ == "__main__":
 default_rows = "15"
 default_cols = "60"
 Index = 0
-@app.route("/submission", methods = ['POST'])
-def submission():
-    return render_template("submit.html", output = "heyyy")
+test_case_output="hello"
+
 
 @app.route("/")
 @app.route("/runc", methods=['POST', 'GET'])
@@ -56,6 +56,8 @@ def runc():
         f.close()  
         run = runcode.RunCCode(code,Index)
         rescompil, resrun, test_case_output = run.run_c_code()
+        print(test_case_output)
+       
         if not resrun:
             resrun = 'No result!'
     else:
@@ -70,6 +72,17 @@ def runc():
                            test_case_output=test_case_output,
                            rescomp=rescompil,
                            rows=default_rows, cols=default_cols)
+
+
+@app.route("/submission", methods = ['POST'])
+
+def submission():
+        output=runcode.RunCCode()
+        test_case_output=output.all_submissions()
+        l=test_case_output.split('\n')
+        print(l)
+        return render_template("Table/table.html",output=l)
+
 
 @app.route("/cpp")
 @app.route("/runcpp", methods=['POST', 'GET'])
@@ -113,4 +126,4 @@ def runpy():
                            rows=default_rows, cols=default_cols)
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0',port="5001")
+    app.run(host='0.0.0.0',port="5000")

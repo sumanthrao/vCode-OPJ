@@ -1,12 +1,15 @@
 import subprocess
 import sys
+from flask import Flask, render_template, request
 import os
 import subprocess
 import threading
 import socket
 import re
-
+app = Flask(__name__)
+test_case_output=""
 class RunCCode(object):
+    
     def __init__(self, code=None,index=0):
         self.code = code
         self.index =  index
@@ -48,8 +51,7 @@ class RunCCode(object):
         test_case_output[test_id] = test_case_status
 
 
-
-
+   
 
     def _run_c_prog(self, cmd="./running/a.out",idx=0):
         # taking custom input
@@ -161,6 +163,13 @@ class RunCCode(object):
             result_run = self.stdout + self.stderr
         cleanup_files(idx)
         return result_compilation, result_run, test_case_output
+
+    def all_submissions(self):
+        idx = self.index
+        prog_output = "./running/a"+str(idx)+".out"
+        test_case_output = self._run_c_prog(prog_output,idx)
+        print("in all submission",test_case_output)
+        return test_case_output
 
 
     #include the limits file in the users code    
