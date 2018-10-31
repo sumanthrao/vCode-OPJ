@@ -129,18 +129,19 @@ class RunCCode(object):
 
     def run_c_code(self, code=None):
         def cleanup_files(index):
-            prog_output = "./running/a"+str(self.index)+".out"
+            #prog_output = "./running/a"+str(self.index)+".out"
             filename = "./running/test"+str(self.index)+".c"
             inputfile = "./running/input"+str(self.index)+".txt"
             if os.path.exists(inputfile):
                 os.remove(inputfile)
             if os.path.exists(filename):
                 os.remove(filename)
-            if os.path.exists(prog_output):
-                os.remove(prog_output)
+            #if os.path.exists(prog_output):
+            #    os.remove(prog_output)
             
             
         idx = self.index
+	print(idx)
         prog_output = "./running/a"+str(idx)+".out"
         filename = "./running/test"+str(idx)+".c"
         if not code:
@@ -165,7 +166,9 @@ class RunCCode(object):
         return result_compilation, result_run, test_case_output
 
     def all_submissions(self):
-        idx = self.index
+	
+        idx = self.index+1
+	print(idx,"su")
         prog_output = "./running/a"+str(idx)+".out"
         test_case_output = self._run_c_prog(prog_output,idx)
         print("in all submission",test_case_output)
