@@ -141,7 +141,7 @@ class RunCCode(object):
             
             
         idx = self.index
-	print(idx)
+        print(idx)
         prog_output = "./running/a"+str(idx)+".out"
         filename = "./running/test"+str(idx)+".c"
         if not code:
@@ -160,6 +160,7 @@ class RunCCode(object):
         print("COMPILED")
         result_compilation = self.stdout + self.stderr
         if res == 0:
+            global test_case_output
             test_case_output = self._run_c_prog(prog_output,idx)
             result_run = self.stdout + self.stderr
         cleanup_files(idx)
@@ -167,10 +168,7 @@ class RunCCode(object):
 
     def all_submissions(self):
 	
-        idx = self.index+1
-	print(idx,"su")
-        prog_output = "./running/a"+str(idx)+".out"
-        test_case_output = self._run_c_prog(prog_output,idx)
+        global test_case_output
         print("in all submission",test_case_output)
         return test_case_output
 
@@ -260,17 +258,3 @@ class RunPyCode(object):
         return self.stderr, self.stdout
 
 
-# #include<stdio.h>
-# int main()
-# {
-# 	int n,a , b;
-# 	scanf("%d",&n);
-# 	scanf("%d",&a);
-# 	scanf("%d",&b);
-# 	int sum=a+b;
-# 	if(sum%2==0)
-# 		printf("Yes");
-# 	else
-# 		printf("No");
-# return 0;
-# }
