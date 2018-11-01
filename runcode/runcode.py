@@ -18,7 +18,12 @@ class RunCCode(object):
             os.mkdir('running')
 
     def _compile_c_code(self, filename, prog="./running/a.out"):
-        cmd = [self.compiler, filename, "-Wall", "-o", prog]
+        flags =  "-std=gnu99"
+        warning = '-O2'
+        hel = '-fomit-frame-pointer'
+        math = "-lm"
+
+        cmd = [self.compiler, flags, warning, hel, filename, "-Wall", "-o", prog, math]
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         result = p.wait()
         a, b = p.communicate()
@@ -86,7 +91,7 @@ class RunCCode(object):
                 submission_correctness = False    
             #checking if memory exceeded
             arr = self.stderr.split()
-            tle_check=self.stdout.split(":")
+            tle_check = self.stdout.split(":")
             STATUS = "Running Successful"
             time = "Ok"
             memory = "Ok"
@@ -94,12 +99,12 @@ class RunCCode(object):
                 time = "Not Ok"
                 STATUS = "TLE"+" "+str(time_limit)
                 submission_correctness = False
-            elif(arr[0]=="MEM"):
+            elif(arr[0] == "MEM"):
                 #if the memory limit exceeded
                 STATUS = "MEMORY LIMIT EXCEEDED \n"
                 memory = "Not Ok"
                 submission_correctness = False
-            elif(arr[0]=="FINISHED"):
+            elif(arr[0] == "FINISHED"):
                 STATUS = "Running successful\n"
             self.update_test_status(i ,score,time,memory,STATUS,test_case_output)
         
@@ -129,15 +134,15 @@ class RunCCode(object):
 
     def run_c_code(self, code=None):
         def cleanup_files(index):
-            #prog_output = "./running/a"+str(self.index)+".out"
+            prog_output = "./running/a"+str(self.index)+".out"
             filename = "./running/test"+str(self.index)+".c"
             inputfile = "./running/input"+str(self.index)+".txt"
             if os.path.exists(inputfile):
                 os.remove(inputfile)
             if os.path.exists(filename):
                 os.remove(filename)
-            #if os.path.exists(prog_output):
-            #    os.remove(prog_output)
+            if os.path.exists(prog_output):
+                os.remove(prog_output)
             
             
         idx = self.index
@@ -162,31 +167,18 @@ class RunCCode(object):
         if res == 0:
             global test_case_output
             test_case_output = self._run_c_prog(prog_output,idx)
+            '''store into db'''
             result_run = self.stdout + self.stderr
         cleanup_files(idx)
         return result_compilation, result_run, test_case_output
 
     def all_submissions(self):
-	
+        '''fetch form db'''
         global test_case_output
         print("in all submission",test_case_output)
         return test_case_output
 
 
-    #include the limits file in the users code    
-    def line_prepender(self,filename, line):
-        with open(filename, 'r+') as f:
-            content = f.read()
-            f.seek(0, 0)
-            f.write(line + content)
-
-    def line_pre_adder(self,filename, line_to_prepend):
-        f = fileinput.input(filename, inplace=1)
-        for xline in f:
-            if f.isfirstline():
-                print(line_to_prepend.rstrip('\r\n') + '\n' + xline)
-            else:
-                print(xline)
 
     def add_limits(code):
         code = re.sub(r'main[\s \t \n a-z A-Z ( ) , \* ;\[\]]*', "main(int argc,char* argv[]){ setlimits(argc,argv);", code)

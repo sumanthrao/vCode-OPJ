@@ -2,7 +2,7 @@ from flask import Flask, render_template, request
 from runcode import runcode
 import socket
 app = Flask(__name__)
-app._static_folder = "/home/t/vCode-OPJ/static/"
+app._static_folder = "/home/sumanth/projects/flask_compiler/codelauncher/static/"
 import code
 import random
 temp=""
